@@ -1,0 +1,8 @@
+@import "tailwindcss";
+:root { color-scheme: dark; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: #030912; color: #e7eef7; font-family: Arial, Helvetica, sans-serif; }
+::selection { background: rgba(34,211,238,.25); color: white; }
+.scan-line { animation: scan 7s linear infinite; }
+@keyframes scan { 0% { transform: translateY(-10vh); opacity: 0; } 10% { opacity: .8; } 90% { opacity: .5; } 100% { transform: translateY(110vh); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
