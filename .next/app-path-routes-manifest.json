@@ -1,0 +1,10 @@
+{
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/about/page": "/about",
+  "/api/contact/route": "/api/contact",
+  "/contact/page": "/contact",
+  "/page": "/",
+  "/services/[slug]/ats-9x2f7m1b8k4p/page": "/services/[slug]/ats-9x2f7m1b8k4p",
+  "/services/page": "/services"
+}
