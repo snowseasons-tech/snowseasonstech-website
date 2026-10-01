@@ -1,0 +1,22 @@
+/* _sass/_variables.scss or assets/css/dashboard-theme.css */
+:root {
+  /* Jekyll Core Inherited Brand Colors */
+  --brand-primary: #4f46e5;       /* Match your site's CTA buttons */
+  --brand-success: #10b981;       /* Active / Complete project status */
+  --brand-warning: #f59e0b;       /* Under Review status */
+  
+  /* Text & Surface Neutral Shading */
+  --text-main: #1f2937;           /* Main readable body font color */
+  --text-muted: #6b7280;          /* Secondary captions and labels */
+  --bg-canvas: #f9fafb;           /* Overall page background behind widgets */
+  --bg-surface: #ffffff;          /* White card elements containing text */
+  
+  /* Radii & Shadows */
+  --radius-card: 12px;
+  --radius-pill: 6px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  
+  /* Layout Dimensions */
+  --max-width-portal: 1200px;
+}
