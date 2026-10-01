@@ -5,7 +5,7 @@
   "/api/contact/route": "/api/contact",
   "/contact/page": "/contact",
   "/page": "/",
+  "/portal/ats-9x2f7m1b8k4p/page": "/portal/ats-9x2f7m1b8k4p",
   "/portal/page": "/portal",
-  "/services/[slug]/ats-9x2f7m1b8k4p/page": "/services/[slug]/ats-9x2f7m1b8k4p",
   "/services/page": "/services"
 }

@@ -1,0 +1,42 @@
+---
+layout: default
+title: Your Project Dashboard
+---
+<div id="loading">Verifying authentication...</div>
+<div id="portal-content" style="display: none;">
+  <h1 id="welcome-message">Project Status</h1>
+  <div id="project-card">
+    <h3 id="project-title">---</h3>
+    <p>Current Phase: <strong id="project-status">---</strong></p>
+    <div class="progress-bar-container">
+      <div id="progress-fill" style="width: 0%;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    // Check if client is logged in
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (!session) {
+      window.location.href = '/login';
+      return;
+    }
+
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('portal-content').style.display = 'block';
+
+    // Fetch dynamic project updates assigned to this user from Supabase
+    const { data: projects, error } = await supabase
+      .from('projects')
+      .select('*')
+      .single();
+
+    if (projects) {
+      document.getElementById('project-title').innerText = projects.title;
+      document.getElementById('project-status').innerText = projects.status;
+      document.getElementById('progress-fill').style.width = `${projects.progress_percent}%`;
+    }
+  });
+</script>

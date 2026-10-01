@@ -1,1 +1,0 @@
-self.__SSG_MANIFEST=new Set(["\u002Fservices\u002F[slug]\u002Fats-9x2f7m1b8k4p"]);self.__SSG_MANIFEST_CB&&self.__SSG_MANIFEST_CB()

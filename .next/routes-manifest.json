@@ -44,16 +44,7 @@
     "afterFiles": [],
     "fallback": []
   },
-  "dynamicRoutes": [
-    {
-      "page": "/services/[slug]/ats-9x2f7m1b8k4p",
-      "regex": "^/services/([^/]+?)/ats\\-9x2f7m1b8k4p(?:/)?$",
-      "routeKeys": {
-        "nxtPslug": "nxtPslug"
-      },
-      "namedRegex": "^/services/(?<nxtPslug>[^/]+?)/ats\\-9x2f7m1b8k4p(?:/)?$"
-    }
-  ],
+  "dynamicRoutes": [],
   "staticRoutes": [
     {
       "page": "/",
@@ -96,6 +87,12 @@
       "regex": "^/portal(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/portal(?:/)?$"
+    },
+    {
+      "page": "/portal/ats-9x2f7m1b8k4p",
+      "regex": "^/portal/ats\\-9x2f7m1b8k4p(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/portal/ats\\-9x2f7m1b8k4p(?:/)?$"
     },
     {
       "page": "/services",
