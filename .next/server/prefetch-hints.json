@@ -59,6 +59,20 @@
       }
     }
   },
+  "/portal": {
+    "hints": 64,
+    "slots": {
+      "children": {
+        "hints": 96,
+        "slots": {
+          "children": {
+            "hints": 160,
+            "slots": null
+          }
+        }
+      }
+    }
+  },
   "/services/[slug]/ats-9x2f7m1b8k4p": {
     "hints": 64,
     "slots": {

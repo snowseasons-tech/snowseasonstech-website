@@ -13,6 +13,19 @@
     ]
   },
   {
+    "route": "/portal",
+    "firstLoadUncompressedJsBytes": 469930,
+    "firstLoadChunkPaths": [
+      ".next/static/chunks/1c16aeaiof9bk.js",
+      ".next/static/chunks/2cnjfzt0rfh6l.js",
+      ".next/static/chunks/3s6nzrbk-8mnv.js",
+      ".next/static/chunks/19mx3mg6lkumu.js",
+      ".next/static/chunks/196x_tfexoucg.js",
+      ".next/static/chunks/2-rtuqsgzmno4.js",
+      ".next/static/chunks/turbopack-3mtwpzaowkout.js"
+    ]
+  },
+  {
     "route": "/contact",
     "firstLoadUncompressedJsBytes": 468748,
     "firstLoadChunkPaths": [

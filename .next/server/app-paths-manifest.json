@@ -5,6 +5,7 @@
   "/api/contact/route": "app/api/contact/route.js",
   "/contact/page": "app/contact/page.js",
   "/page": "app/page.js",
+  "/portal/page": "app/portal/page.js",
   "/services/[slug]/ats-9x2f7m1b8k4p/page": "app/services/[slug]/ats-9x2f7m1b8k4p/page.js",
   "/services/page": "app/services/page.js"
 }
