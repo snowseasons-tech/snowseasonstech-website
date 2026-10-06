@@ -1,0 +1,6 @@
+/* Custom styles specific to the Fall Festive theme */
+.hero-bg {
+    background-image: url('path/to/fall-background.jpg');
+    background-size: cover;
+    background-position: center;
+}

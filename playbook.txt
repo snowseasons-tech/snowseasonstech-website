@@ -1,0 +1,185 @@
+FROM qwen2.5-coder:7b
+
+# System prompt: sets the model's permanent behavior
+SYSTEM """
+You are an expert full-stack web developer specializing in HTML, CSS, JavaScript, and TailwindCSS.
+You will generate clean, semantic, and accessible code for a tree service company called "Lumberjack Santa".
+The company branding is rustic, outdoorsy, and festive — think wood textures, pine trees, and holiday accents.
+
+When creating HTML:
+- Use semantic tags (<header>, <main>, <section>, <footer>, etc.)
+- Include TailwindCSS classes for styling
+- Ensure responsive design (mobile-first)
+
+When creating CSS:
+- Use TailwindCSS utility classes primarily
+- If custom CSS is needed, place it in a separate file and explain where to put it
+
+When creating JavaScript:
+- Use vanilla JS unless otherwise specified
+- Keep code modular and reusable
+- Include comments for clarity
+
+When creating npm/Tailwind setup:
+- Provide package.json dependencies
+- Include Tailwind config setup
+- Show how to run `npx tailwindcss` build commands
+
+When creating theme modules:
+- Each module should be self-contained (HTML partial, Tailwind styles, optional JS)
+- Use consistent naming conventions (e.g., `lumberjack-hero`, `lumberjack-services`, `lumberjack-contact`)
+- Include placeholder images and text relevant to tree services
+
+Always:
+- Validate HTML
+- Follow accessibility best practices (alt text, ARIA labels)
+- Comment code for maintainability
+- Output complete runnable examples
+"""
+
+Creating themed landing pages for a monthly basis can be a great way to keep
+your tree service company, "Lumberjack Santa," fresh and engaging. Here's a
+step-by-step plan to help you get started:
+
+### Step 1: Define Your Themes
+First, decide on the themes for each month. Themes could be based on
+holidays, seasons, or special events. For example:
+- **January:** Winter Wonderland
+- **February:** Valentine's Day Special
+- **March:** Spring Spruce
+- **April:** Earth Day Celebration
+- **May:** Memorial Day
+- **June:** Summer Camp
+- **July:** Independence Day
+- **August:** Labor Day
+- **September:** Fall Festive
+- **October:** Halloween Harvest
+- **November:** Thanksgiving Giveaway
+- **December:** Merry Christmas
+
+### Step 2: Research and Planning
+For each theme, research relevant imagery, colors, and design elements that
+fit the theme. Create a mood board to help visualize the look and feel of the
+landing page.
+
+### Step 3: Create HTML Structure
+Use semantic HTML tags and TailwindCSS utility classes to create the basic
+structure of each landing page. Ensure the design is responsive and
+accessible.
+
+### Step 4: TailwindCSS Styling
+Write TailwindCSS styles that align with each theme. Use utility-first
+classes to ensure flexibility and maintainability.
+
+### Step 5: Add Content and Images
+Insert relevant content and images that match the theme. Placeholder images
+can be used initially, but make sure to replace them with high-quality
+images.
+
+### Step 6: Include Call-to-Action (CTA)
+Each landing page should include a clear CTA that encourages visitors to
+contact "Lumberjack Santa" for more information or to make a reservation.
+
+### Step 7: Testing and Accessibility
+Test each landing page on different devices and browsers to ensure
+responsiveness. Check for accessibility issues such as proper alt text for
+images and ARIA labels if needed.
+
+### Step 8: Deployment
+Deploy the landing pages to your website, ensuring they are easily accessible
+and integrated into your site's navigation.
+
+### Example Theme: Fall Festive
+
+#### HTML Structure (lumberjack-fall.html)
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumberjack Santa - Fall Festive</title>
+    <link
+href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gray-100 font-sans">
+    <header class="bg-red-500 text-white p-4">
+        <div class="container mx-auto">
+            <h1 class="text-2xl font-bold">Lumberjack Santa</h1>
+            <nav>
+                <ul class="flex space-x-4">
+                    <li><a href="#home"
+class="hover:text-red-300">Home</a></li>
+                    <li><a href="#services"
+class="hover:text-red-300">Services</a></li>
+                    <li><a href="#contact"
+class="hover:text-red-300">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto py-8">
+        <section id="hero" class="bg-red-500 text-white text-center py-12">
+            <h2 class="text-4xl font-bold">Welcome to Fall Festive</h2>
+            <p class="text-lg">Experience the beauty of the season with our
+expert tree services.</p>
+        </section>
+
+        <section id="services" class="py-8">
+            <h2 class="text-2xl font-bold mb-4">Our Services</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-white p-4 shadow rounded">
+                    <h3 class="text-xl font-bold mb-2">Tree Pruning</h3>
+                    <p class="text-gray-600">Keep your trees healthy and
+safe.</p>
+                </div>
+                <div class="bg-white p-4 shadow rounded">
+                    <h3 class="text-xl font-bold mb-2">Tree Trimming</h3>
+                    <p class="text-gray-600">Maintain the shape and health of
+your trees.</p>
+                </div>
+                <div class="bg-white p-4 shadow rounded">
+                    <h3 class="text-xl font-bold mb-2">Tree Removal</h3>
+                    <p class="text-gray-600">Efficient and professional tree
+removal.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="py-8 bg-gray-200 text-center">
+            <h2 class="text-2xl font-bold mb-4">Get in Touch</h2>
+            <p class="text-lg">Contact us today for more information or to
+make a reservation.</p>
+            <a href="tel:+1234567890" class="bg-red-500 text-white px-4 py-2 rounded mt-4">Call Us</a>
+        </section>
+    </main>
+
+    <footer class="bg-red-500 text-white text-center py-4">
+        <div class="container mx-auto">
+            <p>&copy; 2023 Lumberjack Santa. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
+```
+
+#### TailwindCSS Styles (styles.css)
+```css
+/* Custom styles specific to the Fall Festive theme */
+.hero-bg {
+    background-image: url('path/to/fall-background.jpg');
+    background-size: cover;
+    background-position: center;
+}
+```
+
+#### Deployment
+Deploy the HTML file to your website's appropriate directory, ensuring it's accessible and integrated into your
+site's navigation.
+
+By following this plan, you can create a series of themed landing pages that are both visually appealing and
+functional, enhancing the user experience and engagement for "Lumberjack Santa."
+
