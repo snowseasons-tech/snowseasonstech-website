@@ -9,7 +9,7 @@ export function Logo() {
       </span>
       <span className="leading-none">
         <span className="block text-[15px] font-bold tracking-[0.18em] text-white">snow<span className="text-cyan-300">Seasons</span></span>
-        <span className="mt-1 block text-[9px] font-medium tracking-[0.28em] text-slate-500">TECHNOLOGY / ENGINEERING</span>
+        <span className="mt-1 block text-[9px] font-medium tracking-[0.28em] text-ink-500">TECHNOLOGY / ENGINEERING</span>
       </span>
     </Link>
   );
