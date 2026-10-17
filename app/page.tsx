@@ -30,7 +30,7 @@ export default function Home() {
                 Explore Services
               </Link>
             </div>
-            <div className="mt-12 flex flex-wrap gap-x-8 gap-y-3 text-xs font-mono uppercase tracking-widest text-slate-600">
+            <div className="mt-12 flex flex-wrap gap-x-8 gap-y-3 text-xs font-mono uppercase tracking-widest text-ink-600">
               <span>SECURITY-FIRST</span><span>TESTABLE</span><span>OBSERVABLE</span><span>MAINTAINABLE</span>
             </div>
           </div>
@@ -44,7 +44,7 @@ export default function Home() {
               <div className="absolute bottom-5 left-5 right-5 grid grid-cols-3 gap-2">
                 {["UPTIME","SECURITY","OBSERVABILITY"].map((x,i)=>(
                   <div key={x} className="rounded-xl border border-white/10 bg-black/45 p-3 backdrop-blur">
-                    <div className="text-[9px] uppercase tracking-widest text-slate-500">{x}</div>
+                    <div className="text-[9px] uppercase tracking-widest text-ink-500">{x}</div>
                     <div className="mt-1 font-mono text-xs text-cyan-200">{i===0?"99.99%":i===1?"ENFORCED":"LIVE"}</div>
                   </div>
                 ))}
@@ -100,7 +100,7 @@ export default function Home() {
               <div key={n} className="relative text-center md:text-left">
                 <div className="mx-auto grid size-12 place-items-center rounded-full border border-cyan-300/35 bg-cyan-300/5 font-mono text-xs text-cyan-300 md:mx-0">{n}</div>
                 <h3 className="mt-5 font-semibold text-white">{t}</h3>
-                <p className="mt-2 text-sm leading-6 text-slate-500">{d}</p>
+                <p className="mt-2 text-sm leading-6 text-ink-500">{d}</p>
               </div>
             ))}
           </div>
@@ -125,7 +125,7 @@ function Value({icon,title,text}:{icon:React.ReactNode;title:string;text:string}
     <div className="rounded-2xl border border-white/8 bg-white/[0.025] p-6">
       <div className="text-cyan-300">{icon}</div>
       <h3 className="mt-5 font-semibold text-white">{title}</h3>
-      <p className="mt-2 text-sm leading-6 text-slate-500">{text}</p>
+      <p className="mt-2 text-sm leading-6 text-ink-500">{text}</p>
     </div>
   );
 }
