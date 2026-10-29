@@ -1,0 +1,70 @@
+name: Publish documentation
+
+# Manual for now. Enable the push trigger after the docs host is chosen and
+# GitHub Pages is configured for this repository.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: docs-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Products that set catalog_id read their name and blurb from the storefront
+      # catalog. Set the STORE_REPOSITORY variable to the snowStore repository to use it.
+      - name: Check out the storefront catalog
+        if: vars.STORE_REPOSITORY != ''
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.STORE_REPOSITORY }}
+          path: snowstore
+
+      - uses: astral-sh/setup-uv@v6
+
+      - name: Generate product docs and sync them into the site
+        working-directory: documentation-platform
+        run: |
+          STORE_ARGS=""
+          if [ -d "$GITHUB_WORKSPACE/snowstore" ]; then
+            STORE_ARGS="--store $GITHUB_WORKSPACE/snowstore"
+          fi
+          uv sync --locked
+          uv run python -m generator --all --format docx $STORE_ARGS --docs-dir docs-site/docs
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: documentation-platform/docs-site/package-lock.json
+
+      - name: Build the docs site
+        working-directory: documentation-platform/docs-site
+        env:
+          DOCS_URL: ${{ vars.DOCS_URL }}
+        run: |
+          npm ci
+          npm run build
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: documentation-platform/docs-site/build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

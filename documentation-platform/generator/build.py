@@ -91,7 +91,9 @@ def build_product(
     manifest = {
         "product": product["id"],
         "version": str(product["version"]),
+        "name": product["name"],
         "status": product["status"],
+        "features_confirmed": product.get("features_confirmed") is True,
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "source": {
             "product_yaml_sha256": sha256(path),

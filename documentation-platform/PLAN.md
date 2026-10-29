@@ -44,18 +44,25 @@ Exit criteria:
 
 ## Phase 2 — Documentation website
 
-Status: not started.
+Status: **scaffolded on branch `docs-platform-phase1`, not published.**
 
-Scope:
-- Docusaurus site with the company branding
-- Public product guides from the same Markdown sources
-- GitHub Actions workflow that builds and publishes the site after review
-- Release-notes workflow drafted from an approved changelog
+Done:
+- Docusaurus 3.10.2 site in `docs-site/`, builds with `npm run build`
+- Publish gate: a product is synced only when its features are confirmed and its status is not draft. Otherwise its docs are removed from the site.
+- `python -m generator --all --docs-dir docs-site/docs` syncs approved products and reports the rest
+- Tests for the gate and the sync
+- `publish-docs.yml` workflow, manual trigger only, with an optional snowStore checkout
+
+Not done:
+- Company branding. The site uses the default theme with only the primary color changed.
+- Release notes from an approved changelog
+- Enabling the push trigger and GitHub Pages. Needs the hosting decision below.
+- Confirmed features. No product is published yet.
 
 Decisions:
 - Docusaurus over Material for MkDocs, which the design says enters maintenance mode with an end date of May 5, 2027. Verify before relying on that date.
 - Hosting: GitHub Pages is the suggested default.
-- Public address: `docs.snowseasonstech.net` is proposed only, not confirmed.
+- Public address: `docs.snowseasonstech.net` is proposed only, not confirmed. Pass it to the build as `DOCS_URL`.
 
 Exit criteria: public guides for the pilot product are live and linked from the product page.
 

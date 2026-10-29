@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 from .build import OUTPUT_FORMATS, BuildError, build_product, check_product
+from .publish import publish_blockers, publish_product
 from .registry import RegistryError, list_product_ids, load_catalog
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -27,6 +28,11 @@ def main(argv: list[str] | None = None) -> int:
         "--store",
         type=Path,
         help="path to a snowStore checkout; fills entries that set catalog_id from its catalog",
+    )
+    parser.add_argument(
+        "--docs-dir",
+        type=Path,
+        help="Docusaurus docs folder; approved products are synced into it, others are removed",
     )
     args = parser.parse_args(argv)
 
@@ -75,6 +81,12 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  skipped {item['file']}: {item['reason']}")
         for warning in manifest["warnings"]:
             print(f"  warning: {warning}")
+
+        if args.docs_dir:
+            if publish_product(manifest, args.out / product_id, args.docs_dir):
+                print(f"  published to {args.docs_dir / 'products' / product_id}")
+            else:
+                print(f"  not published: {'; '.join(publish_blockers(manifest))}")
 
     return 1 if failed else 0
 

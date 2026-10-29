@@ -1,0 +1,20 @@
+{
+  "name": "snowseasons-docs-site",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "start": "docusaurus start",
+    "build": "docusaurus build",
+    "serve": "docusaurus serve",
+    "clear": "docusaurus clear"
+  },
+  "engines": {
+    "node": ">=20.0"
+  },
+  "dependencies": {
+    "@docusaurus/core": "3.10.2",
+    "@docusaurus/preset-classic": "3.10.2",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  }
+}
