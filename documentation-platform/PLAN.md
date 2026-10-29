@@ -52,10 +52,10 @@ Done:
 - `python -m generator --all --docs-dir docs-site/docs` syncs approved products and reports the rest
 - Tests for the gate and the sync
 - `publish-docs.yml` workflow, manual trigger only, with an optional snowStore checkout
+- Release notes generated from `products/<id>/changelog.yaml`. The newest release must match `product.version`, and the build refuses a product that lists `release_notes` without a valid changelog. No pilot product has a changelog yet, so none has release notes.
 
 Not done:
 - Company branding. The site uses the default theme with only the primary color changed.
-- Release notes from an approved changelog
 - Enabling the push trigger and GitHub Pages. Needs the hosting decision below.
 - Confirmed features. No product is published yet.
 
@@ -100,7 +100,7 @@ Each product release checks these documents, per the design:
 | Security documentation | internal | internal | reviewed |
 | Service agreement | if sold | required | required |
 
-The current generator covers the first five and pricing terms. The rest need new templates or source material.
+The current generator covers the product overview (which includes the feature list and known limitations), getting started, pricing terms, and release notes. The rest need new templates or source material.
 
 ## Later — AI-assisted drafting
 

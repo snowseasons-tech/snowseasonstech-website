@@ -1,0 +1,15 @@
+# {{ product.name }} — Release Notes
+
+{% for release in releases %}
+## Version {{ release.version }} ({{ release.date }})
+{% for section, heading in [("added", "Added"), ("changed", "Changed"), ("fixed", "Fixed")] %}
+{% if release.get(section) %}
+
+### {{ heading }}
+
+{% for item in release.get(section) %}
+- {{ item }}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endfor %}

@@ -8,9 +8,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from . import docx_export, pdf_export
-from .registry import load_product, product_file, resolve_product
+from .registry import load_changelog, load_product, product_file, resolve_product
 from .renderer import DOC_TEMPLATES, make_environment, render_document
-from .validation import Report, validate_product, validate_rendered
+from .validation import Report, validate_changelog, validate_product, validate_rendered
 
 OUTPUT_FORMATS = ("docx", "pdf")
 
@@ -32,9 +32,18 @@ def _output(path: Path, fmt: str) -> dict:
     }
 
 
+def _changelog_errors(products_dir: Path, product_id: str, product: dict) -> list[str]:
+    generate = (product.get("documentation") or {}).get("generate") or []
+    if "release_notes" not in generate:
+        return []
+    return validate_changelog(load_changelog(products_dir, product_id), product)
+
+
 def check_product(product_id: str, products_dir: Path, catalog: dict | None = None) -> Report:
     data = resolve_product(load_product(product_file(products_dir, product_id)), catalog)
-    return validate_product(data)
+    report = validate_product(data)
+    report.errors.extend(_changelog_errors(products_dir, product_id, data["product"]))
+    return report
 
 
 def build_product(
@@ -49,11 +58,14 @@ def build_product(
     path = product_file(products_dir, product_id)
     data = resolve_product(load_product(path), catalog)
     report = validate_product(data)
+    report.errors.extend(_changelog_errors(products_dir, product_id, data["product"]))
     if not report.ok:
         problems = "\n  - ".join(report.errors)
         raise BuildError(f"{product_id} failed validation:\n  - {problems}")
 
     product = data["product"]
+    changelog = load_changelog(products_dir, product_id)
+    releases = changelog["releases"] if changelog else None
     env = make_environment(templates_dir)
     target = out_dir / product_id
     target.mkdir(parents=True, exist_ok=True)
@@ -66,7 +78,7 @@ def build_product(
         template_name, stem = DOC_TEMPLATES[doc_type]
         template_hashes[template_name] = sha256(templates_dir / template_name)
 
-        markdown = render_document(env, doc_type, product)
+        markdown = render_document(env, doc_type, product, releases=releases)
         problems = validate_rendered(markdown)
         if problems:
             raise BuildError(f"{stem} has unfilled content:\n  - " + "\n  - ".join(problems))

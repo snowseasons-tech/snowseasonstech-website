@@ -11,6 +11,7 @@ DOC_TEMPLATES = {
     "product_overview": ("product-overview.md.j2", "product-overview"),
     "getting_started": ("getting-started.md.j2", "getting-started"),
     "pricing_sheet": ("pricing-sheet.md.j2", "pricing-sheet"),
+    "release_notes": ("release-notes.md.j2", "release-notes"),
 }
 
 
@@ -27,6 +28,6 @@ def make_environment(templates_dir: Path) -> Environment:
     return env
 
 
-def render_document(env: Environment, doc_type: str, product: dict) -> str:
+def render_document(env: Environment, doc_type: str, product: dict, releases: list | None = None) -> str:
     template_name, _ = DOC_TEMPLATES[doc_type]
-    return env.get_template(template_name).render(product=product)
+    return env.get_template(template_name).render(product=product, releases=releases or [])

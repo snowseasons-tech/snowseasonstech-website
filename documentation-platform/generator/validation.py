@@ -14,11 +14,13 @@ STATUSES = {
     "retired",
 }
 PRE_RELEASE = {"mvp", "early_access", "beta"}
-DOC_TYPES = {"product_overview", "getting_started", "pricing_sheet"}
+DOC_TYPES = {"product_overview", "getting_started", "pricing_sheet", "release_notes"}
 SUPPORT_LEVELS = {"basic", "standard", "priority"}
+CHANGE_SECTIONS = ("added", "changed", "fixed")
 
 SLUG = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 SEMVER = re.compile(r"^\d+\.\d+\.\d+$")
+DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 IDENTIFIER = re.compile(r"^[a-z0-9_]+$")
 PLACEHOLDER = re.compile(r"\bTODO\b|\bTBD\b|\{\{|\}\}|\{%|%\}")
 
@@ -111,6 +113,46 @@ def validate_product(data: dict) -> Report:
         err(f"product.support.level must be one of: {', '.join(sorted(SUPPORT_LEVELS))}")
 
     return report
+
+
+def validate_changelog(changelog: dict | None, product: dict) -> list[str]:
+    """Check a product's changelog before release notes are generated from it.
+
+    Releases are listed newest first, and the newest one must match product.version,
+    so the release notes can't drift from the version the product is sold at.
+    """
+    if changelog is None:
+        return ["release_notes needs products/<id>/changelog.yaml"]
+    releases = changelog.get("releases")
+    if not isinstance(releases, list) or not releases:
+        return ["changelog.releases must be a non-empty list"]
+
+    errors = []
+    seen = set()
+    for index, release in enumerate(releases, start=1):
+        if not isinstance(release, dict):
+            errors.append(f"release {index} must be a mapping")
+            continue
+        version = str(release.get("version", ""))
+        label = version or f"release {index}"
+        if not SEMVER.match(version):
+            errors.append(f"{label}: version must be quoted semver like \"1.0.0\"")
+        elif version in seen:
+            errors.append(f"{label}: duplicate version")
+        seen.add(version)
+        if not DATE.match(str(release.get("date", ""))):
+            errors.append(f"{label}: date must be YYYY-MM-DD")
+        for section in CHANGE_SECTIONS:
+            items = release.get(section) or []
+            if not isinstance(items, list) or not all(_filled(item) for item in items):
+                errors.append(f"{label}: {section} must be a list of text items")
+        if not any(release.get(section) for section in CHANGE_SECTIONS):
+            errors.append(f"{label}: list at least one change")
+
+    newest = releases[0].get("version") if isinstance(releases[0], dict) else None
+    if str(newest) != str(product.get("version")):
+        errors.append(f"newest release {newest} does not match product.version {product.get('version')}")
+    return errors
 
 
 def validate_rendered(text: str) -> list[str]:

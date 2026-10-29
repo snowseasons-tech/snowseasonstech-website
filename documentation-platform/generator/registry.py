@@ -29,6 +29,19 @@ def load_product(path: Path) -> dict:
     return data
 
 
+def load_changelog(products_dir: Path, product_id: str) -> dict | None:
+    path = products_dir / product_id / "changelog.yaml"
+    if not path.is_file():
+        return None
+    try:
+        data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    except yaml.YAMLError as exc:
+        raise RegistryError(f"{path}: invalid YAML: {exc}") from exc
+    if not isinstance(data, dict):
+        raise RegistryError(f"{path}: expected a mapping with a 'releases' list")
+    return data
+
+
 def list_product_ids(products_dir: Path) -> list[str]:
     return sorted(path.parent.name for path in products_dir.glob("*/product.yaml"))
 
