@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Lumberjack Santa</title>
+</head>
+<body class="bg-white text-gray-900 font-sans">
+  <header class="bg-gray-100 text-center py-12">
+    <h1 class="text-4xl font-bold">About Lumberjack Santa</h1>
+  </header>
+
+  <section class="py-12">
+    <div class="container mx-auto">
+      <p>Lumberjack Santa is dedicated to providing top-notch tree services in a rustic and festive atmosphere.</p>
+      <p>Our team of experts is passionate about working with nature and making your experience with us as enjoyable as possible.</p>
+    </div>
+  </section>
+</body>
+</html>

@@ -1,0 +1,165 @@
+---
+layout: default
+---
+
+<!-- SEO Crawling Controls -->
+{% if page.noindex %}
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="googlebot" content="noindex, nofollow">
+{% endif %}
+
+<!-- 1. LOGIN INTERFACE (Visible by default until authenticated) -->
+<div id="login-overlay" class="max-w-md mx-auto my-20 p-8 bg-white border border-gray-200 rounded-xl shadow-sm">
+  <h2 class="text-2xl font-bold text-gray-900 mb-6">Client Portal Login</h2>
+  <form id="login-form" class="space-y-4">
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Email Address</label>
+      <input type="email" id="login-email" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border">
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Password</label>
+      <input type="password" id="login-password" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border">
+    </div>
+    <div id="login-error" class="text-sm text-red-600 hidden"></div>
+    <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+      Sign In
+    </button>
+  </form>
+</div>
+
+<!-- 2. SECURE DASHBOARD CONTAINER (Hidden using 'hidden' style by default) -->
+<div class="max-w-5xl mx-auto px-4 py-8 hidden" id="dashboard-container" data-client-id="{{ page.client_id }}">
+  <div class="border-b border-gray-200 pb-5 mb-8 flex justify-between items-center">
+    <div>
+      <h1 class="text-3xl font-bold tracking-tight text-gray-900" id="project-title">Loading Project...</h1>
+      <p class="text-sm text-gray-500 mt-1">Client Portal & Status Monitor</p>
+    </div>
+    <div class="flex items-center gap-4">
+      <span id="project-status" class="inline-flex items-center rounded-md px-3 py-1 text-sm font-medium capitalize bg-gray-100 text-gray-800">--</span>
+      <button id="logout-btn" class="text-sm text-gray-500 hover:text-red-600">Sign Out</button>
+    </div>
+  </div>
+
+  <!-- Metric Gauges -->
+  <div class="grid grid-cols-1 gap-5 sm:grid-cols-3 mb-8">
+    <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6 border border-gray-100">
+      <dt class="truncate text-sm font-medium text-gray-500">Total Hours Logged</dt>
+      <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900" id="metric-hours">0.0</dd>
+    </div>
+    <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6 border border-gray-100">
+      <dt class="truncate text-sm font-medium text-gray-500">Estimated Target Range</dt>
+      <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900" id="metric-estimate">0 - 0 hrs</dd>
+    </div>
+    <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6 border border-gray-100">
+      <dt class="truncate text-sm font-medium text-gray-500">Current Invoiced Amount</dt>
+      <dd class="mt-1 text-3xl font-semibold tracking-tight text-indigo-600" id="metric-billing">\$0.00</dd>
+    </div>
+  </div>
+
+  <!-- Milestone Tracker -->
+  <div class="bg-white p-6 rounded-lg shadow border border-gray-100 mb-8">
+    <h2 class="text-lg font-semibold text-gray-900 mb-4">Milestone Progress</h2>
+    <div id="milestones-timeline" class="space-y-4"></div>
+  </div>
+</div>
+
+<script src="https://jsdelivr.net"></script>
+<script>
+  const SUPABASE_URL = "https://supabase.co";
+  const SUPABASE_ANON_KEY = "your-anon-public-key";
+  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const loginOverlay = document.getElementById('login-overlay');
+  const dashboardContainer = document.getElementById('dashboard-container');
+  const loginForm = document.getElementById('login-form');
+  const errorDiv = document.getElementById('login-error');
+
+  // Check user session on page load
+  document.addEventListener("DOMContentLoaded", async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      initDashboard(session.user.id);
+    }
+  });
+
+  // Handle Form Login Action
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorDiv.classList.add('hidden');
+    
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      errorDiv.innerText = error.message;
+      errorDiv.classList.remove('hidden');
+    } else {
+      initDashboard(data.user.id);
+    }
+  });
+
+  // Handle Logout Action
+  document.getElementById('logout-btn').addEventListener('click', async () => {
+    await supabase.auth.signOut();
+    window.location.reload();
+  });
+
+  // Render Dashboard Elements
+  async function initDashboard(authenticatedUserId) {
+    const expectedClientId = dashboardContainer.getAttribute('data-client-id');
+    
+    // Explicit UI Protection Check: Verify logged-in ID matches this specific page build target
+    if (authenticatedUserId !== expectedClientId) {
+      loginOverlay.innerHTML = `<h2 class="text-xl font-bold text-red-600">Access Denied</h2><p class="text-sm text-gray-500 mt-2">Your account does not have permission to view this specific project portfolio portal.</p>`;
+      return;
+    }
+
+    loginOverlay.classList.add('hidden');
+    dashboardContainer.classList.remove('hidden');
+
+    const { data: project } = await supabase
+      .from('projects')
+      .select(`
+        id, title, status, hourly_rate, estimated_hours_min, estimated_hours_max,
+        milestones ( id, title, status, sort_order, description ),
+        time_logs ( hours_logged )
+      `)
+      .eq('client_id', authenticatedUserId)
+      .single();
+
+    if (!project) {
+      document.getElementById('project-title').innerText = "Project framework not found.";
+      return;
+    }
+
+    const totalHours = project.time_logs.reduce((sum, log) => sum + parseFloat(log.hours_logged), 0);
+    const totalBilled = totalHours * parseFloat(project.hourly_rate);
+
+    document.getElementById('project-title').innerText = project.title;
+    document.getElementById('project-status').innerText = project.status;
+    document.getElementById('metric-hours').innerText = `${totalHours.toFixed(1)} hrs`;
+    document.getElementById('metric-estimate').innerText = `${project.estimated_hours_min}-${project.estimated_hours_max} hrs`;
+    document.getElementById('metric-billing').innerText = `$${totalBilled.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+
+    const sortedMilestones = project.milestones.sort((a, b) => a.sort_order - b.sort_order);
+    const timelineEl = document.getElementById('milestones-timeline');
+    timelineEl.innerHTML = '';
+
+    sortedMilestones.forEach(m => {
+      let statusColor = 'bg-gray-100 text-gray-800';
+      if (m.status === 'in_progress') statusColor = 'bg-blue-100 text-blue-800 animate-pulse';
+      if (m.status === 'completed') statusColor = 'bg-green-100 text-green-800';
+
+      timelineEl.innerHTML += `
+        <div class="flex items-center justify-between p-3 border-l-4 ${m.status === 'completed' ? 'border-green-500' : 'border-gray-300'} bg-gray-50 rounded-r">
+          <div>
+            <h3 class="font-medium text-gray-900">${m.title}</h3>
+            <p class="text-xs text-gray-500">${m.description || ''}</p>
+          </div>
+          <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ${statusColor}">${m.status.replace('_', ' ')}</span>
+        </div>`;
+    });
+  }
+</script>
