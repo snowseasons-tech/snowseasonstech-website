@@ -1,0 +1,45 @@
+# Product registry entry. Source of truth for every generated document.
+# Prices live in Stripe; this file only references Stripe price IDs.
+# Features are from the initial design and are NOT verified. Set
+# features_confirmed to true only after the product owner has checked them.
+
+product:
+  id: cdot-stations
+  name: CDOT Stations
+  company: Snow Seasons Tech
+  category: SaaS
+  status: early_access
+  version: "0.1.0"
+
+  description: >
+    A dashboard for accessing and monitoring Colorado transportation
+    station information.
+
+  features:
+    - Station dashboard
+    - Station search
+    - Monitoring interface
+    - Account-based access
+  features_confirmed: false
+
+  known_limitations: []
+
+  documentation:
+    generate:
+      - product_overview
+      - getting_started
+      - pricing_sheet
+
+  billing:
+    provider: stripe
+    pricing_source: stripe
+    plans:
+      - name: Standard subscription
+        stripe_price_id: null
+
+  access:
+    authentication_required: true
+    entitlement: cdot_stations_access
+
+  support:
+    level: standard

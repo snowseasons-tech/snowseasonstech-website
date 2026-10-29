@@ -1,0 +1,29 @@
+# {{ product.name }} — Product Overview
+
+**{{ product.company }}** · Version {{ product.version }} · {{ product.status | humanize }}
+
+## Description
+
+{{ product.description | trim }}
+
+## Features
+
+{% for feature in product.features %}
+- {{ feature }}
+{% endfor %}
+{% if product.known_limitations %}
+
+## Known limitations
+
+{% for item in product.known_limitations %}
+- {{ item }}
+{% endfor %}
+{% endif %}
+
+## Access
+
+{% if product.access.authentication_required %}
+Sign in to your Snow Seasons Tech account to use {{ product.name }}.
+{% else %}
+{{ product.name }} does not require sign-in.
+{% endif %}

@@ -1,0 +1,36 @@
+# Docs entry for BookScan Live (storefront catalog key: bookscan).
+# name, version and description come from snowStore's api/_lib/catalog.js.
+# Features and limitations are drafted from snowStore's products/bookscan-live/README.md
+# and need product-owner confirmation before features_confirmed is set to true.
+# status and support.level are not in the catalog; early_access is a guess based on the
+# Founder's membership wording. Confirm both.
+
+product:
+  id: bookscan
+  catalog_id: bookscan
+  company: Snow Seasons Tech
+  status: early_access
+  features_confirmed: false
+
+  features:
+    - Look up a book by ISBN, typed in or entered with a barcode scanner
+    - Resale price comparison across Amazon, AbeBooks, eBay and BookScouter, with the best price highlighted
+    - Profit check that uses your cost to show the margin
+    - Nine-month price trend chart
+    - Scan list with per-book and total estimated resale value
+
+  known_limitations:
+    - Prices come from a built-in book database, not live marketplace data
+
+  documentation:
+    generate:
+      - product_overview
+      - getting_started
+      - pricing_sheet
+
+  access:
+    authentication_required: false
+    entitlement: bookscan_access
+
+  support:
+    level: basic

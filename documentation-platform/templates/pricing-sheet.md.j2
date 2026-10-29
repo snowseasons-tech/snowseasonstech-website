@@ -1,0 +1,9 @@
+# {{ product.name }} — Pricing
+
+Current prices, billing intervals, and renewal terms are shown at checkout and managed through our billing provider, Stripe. This sheet lists the available plans.
+
+| Plan | Description |
+|---|---|
+{% for plan in product.billing.plans %}
+| {{ plan.name }} | {{ plan.get('description', '') }} |
+{% endfor %}

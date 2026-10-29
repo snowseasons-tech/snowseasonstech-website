@@ -1,0 +1,42 @@
+name: Validate documentation
+
+on:
+  push:
+    paths:
+      - "products/**"
+      - "templates/**"
+      - "generator/**"
+      - "tests/**"
+      - "pyproject.toml"
+  pull_request:
+    paths:
+      - "products/**"
+      - "templates/**"
+      - "generator/**"
+      - "tests/**"
+      - "pyproject.toml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+
+      - name: Install dependencies
+        run: uv sync --locked
+
+      - name: Run tests
+        run: uv run pytest
+
+      - name: Validate every product definition
+        run: uv run python -m generator --all --validate-only
+
+      - name: Build documents
+        run: uv run python -m generator --all --format docx
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: generated-documents
+          path: build/

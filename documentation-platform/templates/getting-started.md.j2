@@ -1,0 +1,25 @@
+# Getting Started with {{ product.name }}
+
+Welcome to {{ product.name }}, provided by {{ product.company }}. This guide covers the first steps after you subscribe.
+
+## 1. Get the product
+
+Downloads are available from your order page and, for signed-in accounts, from the customer portal.
+
+## 2. Open it
+
+{% if product.access.authentication_required %}
+Sign in to your Snow Seasons Tech account to use {{ product.name }}.
+{% else %}
+{{ product.name }} does not require an account. Open the file in a supported browser to begin.
+{% endif %}
+
+## 3. Review what the product includes
+
+{% for feature in product.features %}
+- {{ feature }}
+{% endfor %}
+
+## 4. Get help
+
+Your plan includes {{ product.support.level }} support.
