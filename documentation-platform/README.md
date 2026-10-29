@@ -2,7 +2,7 @@
 
 Docs-as-code generator for SaaS product documentation. One product definition in `products/` produces Markdown, Word, and (with Pandoc) PDF documents from approved templates.
 
-**Status: Phase 1 (documentation engine) — pilot product `cdot-stations`.**
+**Status: Phase 1 (documentation engine).** Pilot products are `bookscan` and `invoice-generator` from the store catalog, plus the illustrative `cdot-stations`. The full phased plan is in [PLAN.md](PLAN.md).
 
 ## Layout
 
