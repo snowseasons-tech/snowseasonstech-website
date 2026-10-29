@@ -1,0 +1,20 @@
+[project]
+name = "snowseasons-documentation-platform"
+version = "0.1.0"
+description = "Docs-as-code generator for Snow Seasons Tech SaaS products"
+requires-python = ">=3.11"
+dependencies = [
+    "pyyaml>=6.0",
+    "jinja2>=3.1",
+    "python-docx>=1.1",
+]
+
+[dependency-groups]
+dev = ["pytest>=8.0"]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

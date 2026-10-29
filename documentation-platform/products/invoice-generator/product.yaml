@@ -1,0 +1,42 @@
+# Docs entry for Invoice & Biller (storefront catalog key: invoice-generator).
+# name, version and description come from snowStore's api/_lib/catalog.js.
+# Features and limitations are drafted from snowStore's products/invoice-generator/README.md
+# and need product-owner confirmation before features_confirmed is set to true.
+# status and support.level are not in the catalog; early_access is a guess based on the
+# Founder's membership wording. Confirm both.
+
+product:
+  id: invoice-generator
+  catalog_id: invoice-generator
+  company: Snow Seasons Tech
+  status: early_access
+  features_confirmed: false
+
+  features:
+    - Live preview of the invoice while you type
+    - Business details and logo, remembered for new invoices
+    - Automatic invoice numbering with your prefix
+    - Payment terms with automatic due dates
+    - Line items with quantity, unit price and totals
+    - Discounts, tax, shipping and amounts already paid
+    - Ten currencies
+    - Draft, sent, paid and overdue status
+    - Saved invoice list with duplicate, open and delete
+    - Backup export and import, and CSV export of the invoice list
+    - Light and dark theme
+
+  known_limitations:
+    - Invoices are stored in the browser on one device; use Backup to move them
+
+  documentation:
+    generate:
+      - product_overview
+      - getting_started
+      - pricing_sheet
+
+  access:
+    authentication_required: false
+    entitlement: invoice_generator_access
+
+  support:
+    level: basic
