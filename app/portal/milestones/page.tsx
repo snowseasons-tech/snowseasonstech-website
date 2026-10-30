@@ -11,6 +11,10 @@ export default function PortalMilestonesPage() {
   return (
     <main className="min-h-screen bg-slate-950 px-4 py-16 text-slate-100">
       <div className="mx-auto max-w-5xl">
+        <Link href="/" className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-cyan-300 hover:text-cyan-200">
+          <span aria-hidden="true">←</span> Back to homepage
+        </Link>
+
         <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.35em] text-cyan-300">Milestones</p>

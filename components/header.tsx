@@ -4,10 +4,12 @@ import Link from "next/link";
 import { useState } from "react";
 import { MenuIcon, XIcon } from "./icons";
 import { Logo } from "./logo";
+import { barterUrl } from "@/lib/site";
 
 const links = [
   ["Services", "/services"],
   ["Approach", "/#approach"],
+  ["Barter", barterUrl],
   ["About", "/about"],
   ["Contact", "/contact"],
 ] as const;

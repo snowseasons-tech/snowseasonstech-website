@@ -34,6 +34,10 @@ export default function PortalPage() {
   return (
     <main className="min-h-screen bg-slate-950 px-4 py-16 text-slate-100">
       <div className="mx-auto max-w-6xl">
+        <Link href="/" className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-cyan-300 hover:text-cyan-200">
+          <span aria-hidden="true">←</span> Back to homepage
+        </Link>
+
         <div className="rounded-[2rem] border border-cyan-400/20 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.18),transparent_25%),linear-gradient(135deg,#0f172a_0%,#020817_45%,#06131d_100%)] p-8 shadow-[0_0_90px_rgba(34,211,238,0.14)] md:p-12">
           <div className="flex flex-col gap-7 xl:flex-row xl:items-end xl:justify-between">
             <div className="max-w-2xl">

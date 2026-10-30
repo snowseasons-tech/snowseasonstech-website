@@ -7,6 +7,9 @@ export const site = {
     "SnowSeasonsTech designs secure AI infrastructure, software systems, automation, and cloud platforms with a do-it-right-the-first-time engineering mindset.",
 };
 
+// Snow Barter runs as its own service on a subdomain. Override with NEXT_PUBLIC_BARTER_URL.
+export const barterUrl = process.env.NEXT_PUBLIC_BARTER_URL ?? "https://barter.snowseasonstech.com";
+
 export const services = [
   {
     slug: "ai-infrastructure",
