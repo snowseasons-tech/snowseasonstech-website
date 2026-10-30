@@ -6,6 +6,8 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { blogStatuses, type BlogStatus } from "@/lib/suite/types";
 import { slugify } from "@/lib/suite/slug";
 import { BlogWriterError, writeBlogDraft } from "@/lib/suite/ai/blog-writer";
+import { decryptToken } from "@/lib/social/crypto";
+import { publishSocialPost, type Provider } from "@/lib/social/publish";
 
 const slugPattern = /^[a-z0-9-]{1,120}$/;
 const orgSlugPattern = /^[a-z0-9-]{3,40}$/;
@@ -185,6 +187,159 @@ export async function generateBlogDraft(formData: FormData) {
   revalidatePath("/suite");
   redirect(`/suite/blog/${data}`);
 }
+
+// ---- Social accounts and posts -------------------------------------------------
+
+export async function disconnectSocialAccount(formData: FormData) {
+  const accountId = text(formData, "account_id");
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.rpc("disconnect_social_account", { p_account_id: accountId });
+
+  if (error) {
+    redirect(`/suite/accounts?error=${encodeURIComponent(errorMessage(error))}`);
+  }
+
+  revalidatePath("/suite/accounts");
+  redirect(`/suite/accounts?notice=${encodeURIComponent("Account disconnected.")}`);
+}
+
+export async function createSocialPost(formData: FormData) {
+  const orgId = text(formData, "org_id");
+  const accountId = text(formData, "account_id");
+  const body = text(formData, "body").trim();
+  const imageUrl = text(formData, "image_url").trim();
+  const target = "/suite/social/new";
+
+  if (!accountId) {
+    redirect(`${target}?error=${encodeURIComponent("Choose an account to post to.")}`);
+  }
+  if (!body || body.length > 3000) {
+    redirect(`${target}?error=${encodeURIComponent("Write between 1 and 3000 characters.")}`);
+  }
+  if (imageUrl && !/^https:\/\//.test(imageUrl)) {
+    redirect(`${target}?error=${encodeURIComponent("Image URL must start with https://.")}`);
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.rpc("create_social_post", {
+    p_org_id: orgId,
+    p_account_id: accountId,
+    p_body: body,
+    p_image_url: imageUrl || null,
+  });
+
+  if (error) {
+    redirect(`${target}?error=${encodeURIComponent(errorMessage(error))}`);
+  }
+
+  revalidatePath("/suite/social");
+  redirect(`/suite/social/${data}`);
+}
+
+export async function updateSocialPost(formData: FormData) {
+  const postId = text(formData, "post_id");
+  const body = text(formData, "body").trim();
+  const imageUrl = text(formData, "image_url").trim();
+  const target = `/suite/social/${postId}`;
+
+  if (!body || body.length > 3000) {
+    redirect(`${target}?error=${encodeURIComponent("Write between 1 and 3000 characters.")}`);
+  }
+  if (imageUrl && !/^https:\/\//.test(imageUrl)) {
+    redirect(`${target}?error=${encodeURIComponent("Image URL must start with https://.")}`);
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.rpc("update_social_post", {
+    p_post_id: postId,
+    p_body: body,
+    p_image_url: imageUrl || null,
+  });
+
+  if (error) {
+    redirect(`${target}?error=${encodeURIComponent(errorMessage(error))}`);
+  }
+
+  revalidatePath("/suite/social");
+  redirect(`${target}?saved=1`);
+}
+
+const socialMoves = ["in_review", "approved", "draft"] as const;
+
+export async function moveSocialPost(formData: FormData) {
+  const postId = text(formData, "post_id");
+  const to = text(formData, "to");
+  const target = `/suite/social/${postId}`;
+
+  if (!(socialMoves as readonly string[]).includes(to)) {
+    redirect(`${target}?error=${encodeURIComponent("Unknown status.")}`);
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.rpc("transition_social_post", { p_post_id: postId, p_to: to });
+
+  if (error) {
+    redirect(`${target}?error=${encodeURIComponent(errorMessage(error))}`);
+  }
+
+  revalidatePath("/suite/social");
+  redirect(target);
+}
+
+// Publishing: lock the post, decrypt the token in memory, call the platform, then
+// record the result. The token is never stored in plain text or logged.
+export async function publishApprovedSocialPost(formData: FormData) {
+  const postId = text(formData, "post_id");
+  const target = `/suite/social/${postId}`;
+
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.rpc("begin_social_publish", { p_post_id: postId });
+
+  if (error) {
+    redirect(`${target}?error=${encodeURIComponent(errorMessage(error))}`);
+  }
+
+  const job = (data as SocialPublishJob[] | null)?.[0];
+  if (!job) {
+    redirect(`${target}?error=${encodeURIComponent("Post not found.")}`);
+  }
+
+  let platformPostId: string | null = null;
+  let failure: string | null = null;
+  try {
+    platformPostId = await publishSocialPost(job.provider_name, {
+      token: decryptToken(job.account_token_ciphertext),
+      externalId: job.account_external_id,
+      body: job.post_body,
+      imageUrl: job.post_image_url,
+    });
+  } catch (err) {
+    failure = err instanceof Error ? err.message : "Publishing failed.";
+  }
+
+  const { error: finishError } = await supabase.rpc("finish_social_publish", {
+    p_post_id: postId,
+    p_platform_post_id: platformPostId,
+    p_error: failure,
+  });
+
+  revalidatePath("/suite/social");
+  if (finishError) {
+    redirect(`${target}?error=${encodeURIComponent(errorMessage(finishError))}`);
+  }
+  if (failure) {
+    redirect(`${target}?error=${encodeURIComponent(failure)}`);
+  }
+  redirect(`${target}?notice=${encodeURIComponent("Published.")}`);
+}
+
+type SocialPublishJob = {
+  provider_name: Provider;
+  account_external_id: string;
+  account_token_ciphertext: string;
+  post_body: string;
+  post_image_url: string | null;
+};
 
 export async function saveDraft(formData: FormData) {
   const postId = text(formData, "post_id");

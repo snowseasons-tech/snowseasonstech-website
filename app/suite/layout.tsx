@@ -33,6 +33,12 @@ export default async function SuiteLayout({ children }: { children: React.ReactN
                 <Link href="/suite/blog/generate" className="text-sm font-medium text-slate-300 hover:text-white">
                   Generate draft
                 </Link>
+                <Link href="/suite/social" className="text-sm font-medium text-slate-300 hover:text-white">
+                  Social
+                </Link>
+                <Link href="/suite/accounts" className="text-sm font-medium text-slate-300 hover:text-white">
+                  Accounts
+                </Link>
               </>
             ) : null}
           </div>
