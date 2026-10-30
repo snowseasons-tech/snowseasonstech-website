@@ -10,7 +10,7 @@ Production-oriented Next.js website for SnowSeasonsTech — AI infrastructure, s
 - Resend for contact-form delivery
 
 ## Local development
-Requirements: Node.js 20.9+.
+Requirements: Node.js 22 or later (pinned in `.nvmrc`; the Supabase packages require 22).
 
 ```bash
 npm install
