@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { moveSocialPost, publishApprovedSocialPost, updateSocialPost } from "../../actions";
+import { moveSocialPost, publishApprovedSocialPost, releaseStuckSocialPost, updateSocialPost } from "../../actions";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { PendingSubmitButton } from "@/components/suite/pending-submit-button";
 
@@ -15,8 +15,16 @@ type SocialPost = {
   error: string | null;
   platform_post_id: string | null;
   published_at: string | null;
+  updated_at: string;
   social_accounts: { display_name: string; provider: string } | null;
 };
+
+// Matches the release rule in migration 20261030010000: a post counts as stuck after 10 minutes.
+const stuckAfterMs = 10 * 60 * 1000;
+
+function isStuck(updatedAt: string): boolean {
+  return new Date(updatedAt).getTime() < Date.now() - stuckAfterMs;
+}
 
 const statusLabels: Record<string, string> = {
   draft: "Draft",
@@ -40,7 +48,7 @@ export default async function SocialPostPage({
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase
     .from("social_posts")
-    .select("id, org_id, body, image_url, status, error, platform_post_id, published_at, social_accounts ( display_name, provider )")
+    .select("id, org_id, body, image_url, status, error, platform_post_id, published_at, updated_at, social_accounts ( display_name, provider )")
     .eq("id", id)
     .maybeSingle();
 
@@ -106,6 +114,32 @@ export default async function SocialPostPage({
           </form>
         ) : null}
       </div>
+
+      {post.status === "publishing" ? (
+        <div className="mt-6 rounded-xl border border-cyan-400/20 bg-cyan-400/5 p-4 text-sm text-slate-300">
+          {isStuck(post.updated_at) ? (
+            <>
+              <p>
+                This post has been publishing for over 10 minutes. The connection may have dropped after the platform
+                accepted it, so check the platform before doing anything else.
+              </p>
+              {isAdmin ? (
+                <form action={releaseStuckSocialPost} className="mt-3">
+                  <input type="hidden" name="post_id" value={post.id} />
+                  <button
+                    type="submit"
+                    className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-100 transition hover:border-cyan-400 hover:text-cyan-300"
+                  >
+                    Release post (marks it failed)
+                  </button>
+                </form>
+              ) : null}
+            </>
+          ) : (
+            <p>Publishing is in progress. If it does not finish within 10 minutes, an admin can release it.</p>
+          )}
+        </div>
+      ) : null}
 
       {editable ? (
         <form action={updateSocialPost} className="mt-8 space-y-6 rounded-2xl border border-white/10 bg-white/5 p-6">

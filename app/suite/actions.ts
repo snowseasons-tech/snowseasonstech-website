@@ -317,20 +317,50 @@ export async function publishApprovedSocialPost(formData: FormData) {
     failure = err instanceof Error ? err.message : "Publishing failed.";
   }
 
-  const { error: finishError } = await supabase.rpc("finish_social_publish", {
-    p_post_id: postId,
-    p_platform_post_id: platformPostId,
-    p_error: failure,
-  });
+  // Saving the result is retried once. If it still fails after the platform accepted
+  // the post, the post stays 'publishing' and an admin must check the platform
+  // before releasing it.
+  let finishError: { message: string } | null = null;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    const result = await supabase.rpc("finish_social_publish", {
+      p_post_id: postId,
+      p_platform_post_id: platformPostId,
+      p_error: failure,
+    });
+    finishError = result.error;
+    if (!finishError) {
+      break;
+    }
+  }
 
   revalidatePath("/suite/social");
   if (finishError) {
-    redirect(`${target}?error=${encodeURIComponent(errorMessage(finishError))}`);
+    const message = platformPostId
+      ? "The post was published, but its result could not be saved. Check the platform before releasing this post."
+      : errorMessage(finishError);
+    redirect(`${target}?error=${encodeURIComponent(message)}`);
   }
   if (failure) {
     redirect(`${target}?error=${encodeURIComponent(failure)}`);
   }
   redirect(`${target}?notice=${encodeURIComponent("Published.")}`);
+}
+
+// Releases a post stuck in 'publishing' (see migration 20261030010000). Marks it failed
+// so it can be retried through the normal review flow.
+export async function releaseStuckSocialPost(formData: FormData) {
+  const postId = text(formData, "post_id");
+  const target = `/suite/social/${postId}`;
+
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.rpc("release_stuck_social_post", { p_post_id: postId });
+
+  if (error) {
+    redirect(`${target}?error=${encodeURIComponent(errorMessage(error))}`);
+  }
+
+  revalidatePath("/suite/social");
+  redirect(`${target}?notice=${encodeURIComponent("Post released. Check the platform before you retry.")}`);
 }
 
 type SocialPublishJob = {

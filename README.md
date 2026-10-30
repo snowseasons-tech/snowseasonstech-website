@@ -53,4 +53,4 @@ Set these on the server (never in the browser):
 
 Flow: members write and submit posts, an owner or admin approves, then an admin publishes. Tokens are encrypted before they are stored, and members cannot read them. Platform API versions are pinned in `lib/social/config.ts`.
 
-Known limits in this phase: LinkedIn posts are personal profiles only (no company pages), LinkedIn posts are text-only, and tokens are not refreshed automatically, so an expired account must be reconnected. A post stuck in `publishing` after a crash needs a database fix until a retry path is added.
+Known limits in this phase: LinkedIn posts are personal profiles only (no company pages), LinkedIn posts are text-only, and tokens are not refreshed automatically, so an expired account must be reconnected. A post stuck in `publishing` after a crash can be released by an admin once it has been stuck for 10 minutes. Released posts are marked failed, and the admin should check the platform before retrying, since the post may already be live. Apply `supabase/migrations/20261030010000_release_stuck_social_posts.sql` after the phase 3 migration.
